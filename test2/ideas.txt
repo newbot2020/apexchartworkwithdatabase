@@ -1,0 +1,20 @@
+
+$(#adddata).click(function(){
+
+-----code----
+show error message to user to click search button first
+
+$(#search).click(function(){
+
+------<normal searching code block>-----
+
+-----initial new array--------
+
+-----reload webpage
+
+$(#adddata).click(function(){
+------copy paste ----<normal searching code block>-----
+
+initial array.push(present_selected_data)
+reload page
+}

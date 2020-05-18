@@ -1,0 +1,56 @@
+<html>
+<head>
+ <script src="https://code.jquery.com/jquery-3.4.1.min.js"> </script>
+ <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css">
+
+<style>
+
+</style>
+</head>
+<body>
+
+<div class="jumbotron">
+
+  <button class="btn btn-primary" style="margin-top:10%;" id="search">Get area data</button>
+    <h2>Hello Everyone</h2>
+  <div id="phpdata"></div>
+  <h2 id="name"> </h2>
+  <h2 id="id"> </h2>
+  <h2 id="roll"> </h2>
+</div>
+
+
+
+
+<script type="text/javascript">
+
+$(document).ready(function() {
+
+    $("#search").click(function() {
+        console.log("search for data");
+
+
+            //$.getJSON('datasend.php', function(jsondata) {
+            //console.log(jsondata);
+            //});
+
+        $.get( "datasendv3get.php", function(data) {
+            var jsonobj=JSON.parse(data);
+          console.log(jsonobj);
+          console.log( "Load was performed." );
+         });
+        
+        //testing with mysql database
+        
+        
+        //$.getJSON('datasendv3get.php', function(jsondata) {
+        //    console.log(jsondata);
+        //    });
+
+    });
+});
+    
+    
+</script>
+</body>
+</html>

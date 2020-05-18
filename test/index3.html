@@ -1,0 +1,240 @@
+<html>
+
+<head>
+    <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+    <script src="/checkbox.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" />
+
+    <style>
+        #messenger {
+            background-color: #9e0202;
+            color: white;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="message"></div>
+
+    <nav class="navbar navbar-light bg-light">
+        <a class="navbar-brand" href="#">
+            <img src="/badc.png" width="50" height="50" class="d-inline-block align-top" alt="">
+            Bangladesh Agricultural Development Corporation
+        </a>
+    </nav>
+
+    <div class="jumbotron row" id="formcheckbox">
+
+
+        <div class="col-4" style="background-color: #b8ecf5;" id="column1"></div>
+        <div class="col-4" style="background-color: #d0d6d4;" id="column2"></div>
+        <div class="col-4" style="background-color: #ed9dad;" id="column3"></div>
+
+        <div class="row">
+            <button class="btn btn-primary form-group mr-2" style="margin-top: 10%;" id="search">
+                List of area
+            </button>
+            <button class="btn btn-info form-group mr-2" style="margin-top: 10%;display:none;" id="getdata">
+                See the chart
+            </button>
+        </div>
+    </div>
+
+    <!--copy index6.php (29-40)-->
+
+    <br><br>
+
+    <div id="chart">
+    </div>
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $("#search").click(function () {
+
+                console.log("search for data");
+
+                //$.getJSON('datasend.php', function(jsondata) {
+                //console.log(jsondata);
+                //});
+
+                let fillColumnWithData = (datas, start, end, columnid) => {
+                    let i = start;
+                    let html = "";
+                    while (i >= start && i < end) {
+                        let htmlcontent =
+                            '<input type="checkbox" id="' +
+                            datas.id[i] +
+                            '"' + 'class="checkselect"' + 'name="' +
+                            datas.id[i] +
+                            '" value="' +
+                            datas.id[i] +
+                            '">' +
+                            '<label for="' +
+                            datas.id[i] +
+                            '">' +
+                            datas.place[i] +
+                            "</label><br>";
+                        html += htmlcontent;
+                        i += 1;
+
+                    }
+                    $(columnid).append(html);
+                    console.log("successful");
+                    $("#getdata").css("display", "block");
+                };
+                let dataseries = [];
+                let dataseriesid = [];
+                let storedata = (data_received_from_httpget) => {
+                    $("#getdata").click(function () {
+
+
+                        let id = parseInt($(".checkselect:checked").val());
+                        console.log(id);
+                        console.log(typeof (id));
+                        data = data_received_from_httpget;
+                        console.log("place is  --" + data.place[id - 1]);
+
+
+
+
+
+                        let realdata = (data.data[id - 1]).slice(",");
+                        //delete realdata[0];
+                        //delete realdata[realdata.length - 1];
+                        realdata = realdata.substr(1, realdata.length - 2);
+                        realdata = realdata.split(",");
+                        realarrydata = [];
+                        for (let i = 0; i < realdata.length; i += 3) {
+                            realarrydata.push(parseFloat(realdata[i]));
+                        }
+                        //cssid = "#" + id;
+                        console.log(realarrydata);
+                        //$(cssid).prop('checked', false);
+
+
+
+
+
+
+
+                        var options = {
+                            series: [{
+                                name: data.place[id - 1],
+                                data: realarrydata
+                            }],
+                            chart: {
+                                height: 500,
+
+                                type: 'line',
+                                dropShadow: {
+                                    enabled: true,
+                                    color: '#fff',
+                                    top: 18,
+                                    left: 7,
+                                    blur: 10,
+                                    opacity: 0.2
+                                },
+                                toolbar: {
+                                    show: false
+                                }
+                            },
+                            colors: ['#02447a', '#c93c3c', '#3e3b59'],
+
+                            stroke: {
+                                curve: 'straight'
+                            },
+                            fill: {
+                                type: 'gradient'
+                            },
+                            title: {
+                                text: 'Ground water level',
+                                align: 'left'
+                            },
+                            grid: {
+                                borderColor: '#e7e7e7'
+
+                            },
+                            markers: {
+                                size: 1
+                            },
+                            xaxis: {
+
+                                title: {
+                                    text: 'In Week'
+                                },
+
+                            },
+                            yaxis: {
+                                title: {
+                                    text: 'Depth of water level from ground'
+                                },
+                                min: 0,
+                                max: 12
+                            },
+                            legend: {
+                                position: 'top',
+                                horizontalAlign: 'right',
+                                floating: true,
+                                offsetY: -25,
+                                offsetX: -5
+                            }
+                        };
+
+                        var chart = new ApexCharts(document.querySelector("#chart"),
+                            options);
+                        chart.render();
+
+
+                    });
+
+
+                };
+
+                $.get("datasendv3get.php", function (data) {
+                    let jsonobj = JSON.parse(data);
+                    console.log(jsonobj);
+                    console.log("Load was performed.");
+                    totaldatalength = jsonobj.id.length;
+                    console.log("datalength  " + totaldatalength);
+                    console.log(typeof totaldatalength);
+                    numberofcolumndata = Math.floor(totaldatalength / 3);
+
+
+                    console.log(numberofcolumndata);
+                    fillColumnWithData(jsonobj, 0, numberofcolumndata,
+                        "#column1");
+
+
+                    console.log("Load was performed.column1");
+                    fillColumnWithData(
+                        jsonobj,
+                        numberofcolumndata,
+                        2 * numberofcolumndata,
+                        "#column2"
+                    );
+                    console.log("Load was performed.column2");
+                    fillColumnWithData(
+                        jsonobj,
+                        2 * numberofcolumndata,
+                        totaldatalength,
+                        "#column3"
+                    );
+                    console.log("Load was performed.column3");
+
+                    storedata(jsonobj);
+
+                });
+
+
+                //testing with mysql database
+
+                //$.getJSON('datasendv3get.php', function(jsondata) {
+                //    console.log(jsondata);
+                //    });
+            });
+        });
+    </script>
+</body>
+
+</html>

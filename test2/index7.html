@@ -1,0 +1,103 @@
+<?php
+include 'calldata.php';
+?>
+<html>
+  <head>
+    <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+    <script src="/checkbox.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@2.8.0"></script>
+    <link
+      rel="stylesheet"
+      href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"
+    />
+
+
+    <style>
+      #messenger {
+        background-color: #9e0202;
+        color: white;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="message"></div>
+
+    <div class="jumbotron row" id="formcheckbox">
+      <div class="col-4" style="background-color: #a859f7;" id="column1"></div>
+      <div class="col-4" style="background-color: #59f7a0;" id="column2"></div>
+      <div class="col-4" style="background-color: #f75959;" id="column3"></div>
+    </div>
+
+    <!--copy index6.php (29-40)-->
+
+    <button class="btn btn-primary" style="margin-top: 10%;" id="search">
+      Get Data
+    </button>
+    <br /><br />
+    <div class="chart-container" style="position: relative; height:40vh; width:80vw"></div>
+    <canvas id="myChart" ></canvas>
+    </div>
+
+    <script type="text/javascript">
+      $(document).ready(function () {
+        Getcheckbox();
+        $("#search").click(function () {
+          var id = parseInt($(".checkselect:checked").val());
+          console.log(id, typeof id);
+          console.log("second stage started");
+          $.post(
+            "fetch3.php",
+            {
+              postid: id,
+            },
+            function (data) {
+              var len = data.length;
+              var data = data.slice(2, len - 1);
+              data = '"' + data;
+              data = data.split(",");
+              var main = [];
+              for (var i = 0; i < data.length - 1; i++) {
+                if (!Number.isNaN(parseFloat(data[i]))) {
+                  main.push(parseFloat(data[i]));
+                }
+              }
+              if (jQuery.isEmptyObject(main)) {
+                $("#message").html(
+                  '<div class="alert alert-danger col-sm-3 " id="messenger" role="alert">Data is not available try again</div>'
+                );
+              }
+              console.log(data);
+
+              Object.values(main);
+              console.log(main);
+              console.log(typeof main);
+              chartjs(main);
+            }
+          );
+          function chartjs(data, nametag) {
+            var ctx = document.getElementById("myChart").getContext("2d");
+            var chart = new Chart(ctx, {
+              // The type of chart we want to create
+              type: "line",
+
+              // The data for our dataset
+              data: {
+                datasets: [
+                  {
+                    label: "The default chart",
+                    pointBackgroundColor: "rgb(25, 20, 41)",
+                    borderColor: "rgb(255, 99, 132)",
+                    data: data,
+                  },
+                ],
+              },
+
+              // Configuration options go here
+              options: {},
+            });
+          }
+        });
+      });
+    </script>
+  </body>
+</html>
